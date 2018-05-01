@@ -11,6 +11,7 @@ class Chapter extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      modules: {clipboard: {matchVisual: false}}
     }
     this.quillRef = null;
     this.reactQuillRef = null;
@@ -19,9 +20,11 @@ class Chapter extends React.Component {
   }
 
   componentDidMount() {
+    console.log('this.props.content.__html: ', this.props.content.__html)
   }
 
   componentDidUpdate() {
+    console.log('this.props.content.__html: ', this.props.content.__html)
     if(this.quillRef === null && this.props.mode === 'editor' && typeof this.reactQuillRef.getEditor === 'function') {
       this.quillRef = this.reactQuillRef.getEditor();
       this.props.loadQR(this.quillRef)
@@ -35,7 +38,8 @@ class Chapter extends React.Component {
   // }
 
   render() {
-    const mode = this.props.mode === 'editor' ? ( <ReactQuill ref={(el) => { this.reactQuillRef = el }} theme="bubble" value={this.props.content} onChange={this._handleChange} onChangeSelection={this._handleChangeSelection} /> ) : ( <div>{this.props.content}</div> );
+    // let delta = JSON.parse(this.props.content)
+    const mode = this.props.mode === 'editor' ? ( <ReactQuill ref={(el) => { this.reactQuillRef = el }} modules={this.state.modules} theme="bubble" value={this.props.content.__html} onChange={this._handleChange} onChangeSelection={this._handleChangeSelection} /> ) : ( <div dangerouslySetInnerHTML={this.props.content}></div> );
     return (
       <div>
         <h2>{this.props.title}</h2>
