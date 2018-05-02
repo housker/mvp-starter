@@ -2,6 +2,10 @@ body {
   background-color: powderblue;
 }
 
+.tooltiptext{
+    display: none;
+}
+
 
 
 

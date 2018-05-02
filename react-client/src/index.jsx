@@ -1,6 +1,9 @@
 //ToDo: Sanitize editor input
 //https://github.com/quilljs/quill/issues/510
 
+//maybe next time use this, only saw this after setting up quill:
+//https://draftjs.org/
+
 import React from 'react';
 import createFragment from 'react-addons-create-fragment';
 import ReactDOM from 'react-dom';
