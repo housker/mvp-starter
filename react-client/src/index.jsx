@@ -23,12 +23,18 @@ class App extends React.Component {
       globeMode: false,
       mode: 'chapter',
       title: 'Boulder, CO',
+      isHovering: false,
+      votes: 0,
       content: { __html: '<p><span style="color:#003700;background-color:#cce8cc">Lots</span> of words are here</p>'}
     }
     this.quillRef = null;
     this.oldContent = {};
     this.loadQR = this.loadQR.bind(this)
     this.click = this.click.bind(this);
+    this.upVote = this.upVote.bind(this);
+    this.downVote = this.downVote.bind(this);
+    this.reveal = this.reveal.bind(this);
+    this.hide = this.hide.bind(this);
   }
 
   // componentDidMount() {
@@ -119,9 +125,26 @@ class App extends React.Component {
       // console.log('this.state.content: ', this.state.content)
       // this.quillRef.setContents(adjusted);
 
-
-
   }
+
+
+reveal() {
+  this.setState({isHovering: !this.state.isHovering})
+}
+
+hide() {
+  setTimeout(() => this.setState({isHovering: !this.state.isHovering}), 1000)
+}
+
+upVote() {
+  this.setState({votes: ++this.state.votes});
+  console.log(this.state.votes)
+}
+
+downVote() {
+  this.setState({votes: --this.state.votes});
+  console.log(this.state.votes)
+}
 
   click() {
     switch (this.state.mode) {
@@ -155,10 +178,10 @@ class App extends React.Component {
       default:
       console.log('mode not recognized')
     }
-  const mode = this.state.globeMode ? ( <Globe title={this.state.title} content={this.state.content} button={button}/> ) : ( <Chapter mode={this.state.mode} title={this.state.title} content={this.state.content} edit={this.edit} loadQR={this.loadQR} button={button}/> );
+  const mode = this.state.globeMode ? ( <Globe title={this.state.title} content={this.state.content} button={button}/> ) : ( <Chapter mode={this.state.mode} title={this.state.title} upVote={this.upVote} downVote={this.downVote} votes={this.state.votes} reveal={this.reveal} hide={this.hide} isHovering={this.state.isHovering} content={this.state.content} edit={this.edit} loadQR={this.loadQR} button={button}/> );
     return (<div>
       {mode}
-      <button onClick={this.click}>{button}</button>
+      <button className="main" onClick={this.click}>{button}</button>
     </div>)
   }
 }
