@@ -16,8 +16,8 @@ DROP TABLE IF EXISTS `chapters`;
 
 CREATE TABLE `chapters` (
   `id` INTEGER NOT NULL AUTO_INCREMENT,
-  `title` CHAR,
-  `content` CHAR,
+  `title` CHAR(50),
+  `content` TEXT(500),
   `votes` INTEGER,
   `updated` TIMESTAMP,
   PRIMARY KEY (`id`)

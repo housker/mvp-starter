@@ -19,6 +19,7 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      items: [],
       quillRef: {},
       globeMode: false,
       mode: 'chapter',
@@ -37,8 +38,23 @@ class App extends React.Component {
     this.hide = this.hide.bind(this);
   }
 
-  // componentDidMount() {
-  // }
+  componentDidMount() {
+    $.ajax({
+      url: '/items',
+      success: (data) => {
+        this.setState({
+          items: data,
+          title: data[0].title,
+          content: {__html: data[0].content},
+          votes: data[0].votes,
+        })
+        console.log("this.state.items: ", this.state.items)
+      },
+      error: (err) => {
+        console.log('err', err);
+      }
+    });
+  }
 
   // componentDidUpdate() {
   // }
@@ -71,60 +87,19 @@ class App extends React.Component {
 
   for (var i = 0; i < diff.ops.length; i++) {
       var op = diff.ops[i];
-      // if the change was an insertion
       if (op.hasOwnProperty('insert')) {
-        // color it green
         op.attributes = {
           background: "#cce8cc",
           color: "#003700"
         };
       }
-      // if the change was a deletion
-      // if (op.hasOwnProperty('delete')) {
-      //   // keep the text
-      //   op.retain = op.delete;
-      //   delete op.delete;
-      //   // but color it red and struckthrough
-      //   op.attributes = {
-      //     background: "#e8cccc",
-      //     color: "#370000",
-      //     strike: true
-      //   };
-      // }
     }
 
-      var adjusted = this.oldContent.compose(diff);
-      console.log('adjusted: ', adjusted)
-      var converter = new DeltaConverter(adjusted.ops, {});
-      var html = converter.convert();
-      console.log('html[0]: ', html[0])
-      console.log('html: ', html)
-      // html = "'" + html + "'"
-
-
-      // this.quillRef.setContents(adjusted)
-      // this.state.content = adjusted;
-      // adjusted = JSON.stringify(adjusted)
-      // var tempCont = document.createElement("div");
-      // var newQuill = (new Quill(tempCont)).setContents(adjusted);
-      // console.log('newQuill: ', newQuill)
-      // // console.log(Array.isArray(adjusted))
-      // // this.setState({content: adjusted})
-      // html = {__html: html}
-      // console.log('html: ', html)
-
-      // html = html.toString()
-      // html = JSON.stringify(html)
-
-      console.log('this.state.content: ', this.state.content)
-
-      this.setState({content: {__html: html}})
-      console.log('this.state.content: ', this.state.content)
-      // createFragment(adjusted)
-      // this.setState({content: adjusted})
-      // console.log('this.state.content: ', this.state.content)
-      // this.quillRef.setContents(adjusted);
-
+    var adjusted = this.oldContent.compose(diff);
+    console.log('adjusted: ', adjusted)
+    var converter = new DeltaConverter(adjusted.ops, {});
+    var html = converter.convert();
+    this.setState({content: {__html: html}})
   }
 
 
