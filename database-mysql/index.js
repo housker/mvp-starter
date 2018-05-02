@@ -17,4 +17,18 @@ var selectAll = function(callback) {
   });
 };
 
+var insert = function(body, callback) {
+  console.log('body in database: ', body)
+  console.log('callback in database: ', callback)
+  var values = [body.title, body.content, body.votes]
+  connection.query('INSERT INTO chapters (title, content, votes) VALUES(?, ?, ?)', values, function(err, results, fields) {
+    if(err) {
+      callback(err, null);
+    } else {
+      callback(null, results);
+    }
+  })
+}
+
 module.exports.selectAll = selectAll;
+module.exports.insert = insert;

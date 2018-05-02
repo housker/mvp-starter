@@ -1,6 +1,8 @@
 //ToDo: Sanitize editor input
 //https://github.com/quilljs/quill/issues/510
 
+//ToDo: update database when vote
+
 //maybe next time use this, only saw this after setting up quill:
 //https://draftjs.org/
 
@@ -59,20 +61,6 @@ class App extends React.Component {
   // componentDidUpdate() {
   // }
 
-
-    // $.ajax({
-    //   url: '/items',
-    //   success: (data) => {
-    //     this.setState({
-    //       items: data
-    //     })
-    //   },
-    //   error: (err) => {
-    //     console.log('err', err);
-    //   }
-    // });
-
-
   loadQR(qr) {
     this.quillRef = qr;
     this.oldContent = this.quillRef.getContents();
@@ -99,6 +87,40 @@ class App extends React.Component {
     console.log('adjusted: ', adjusted)
     var converter = new DeltaConverter(adjusted.ops, {});
     var html = converter.convert();
+
+    this.setState({votes: 0})
+
+
+    fetch('/items', {
+      method: 'POST',
+      body: JSON.stringify({
+        title: this.state.title,
+        content: html,
+        votes: this.state.votes,
+      }),
+      headers: {
+        'content-type': 'application/json'
+      }
+    })
+    .then(res => res.json())
+    .then(jsonRes => console.log('jsonRes: ', jsonRes))
+    .catch(err => console.log(err));
+    // $.ajax({
+    //   url: '/items',
+    //   type: 'POST',
+    //   contentType: 'application/json',
+    //   data: JSON.stringify(html),
+    //   dataType: 'json',
+    //   success: (data) => {
+    //     this.setState({
+    //       items: data
+    //     })
+    //   },
+    //   error: (err) => {
+    //     console.log('err', err);
+    //   }
+    // });
+
     this.setState({content: {__html: html}})
   }
 
@@ -112,11 +134,17 @@ hide() {
 }
 
 upVote() {
+  // fetch('/items', {
+  //   method: 'PUT'
+  // })
   this.setState({votes: ++this.state.votes});
   console.log(this.state.votes)
 }
 
 downVote() {
+  // fetch('/items', {
+  //   method: 'PUT'
+  // })
   this.setState({votes: --this.state.votes});
   console.log(this.state.votes)
 }
