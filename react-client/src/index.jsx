@@ -28,7 +28,7 @@ class App extends React.Component {
       title: 'Boulder, CO',
       isHovering: false,
       votes: 0,
-      content: { __html: '<p><span style="color:#003700;background-color:#cce8cc">Lots</span> of words are here</p>'}
+      content: { __html: '<p>There was a story.<span style="color:#003700;background-color:#cce8cc"> And this is the next part.</span></p>'}
     }
     this.quillRef = null;
     this.oldContent = {};
@@ -44,11 +44,12 @@ class App extends React.Component {
     $.ajax({
       url: '/items',
       success: (data) => {
+        var l = data
         this.setState({
-          items: data,
+          items: data[0],
           title: data[0].title,
           content: {__html: data[0].content},
-          votes: data[0].votes,
+          votes: data[0].votes
         })
         console.log("this.state.items: ", this.state.items)
       },

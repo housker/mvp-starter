@@ -8,10 +8,11 @@ var connection = mysql.createConnection({
 });
 
 var selectAll = function(callback) {
-  connection.query('SELECT * FROM chapters', function(err, results, fields) {
+  connection.query('SELECT * FROM chapters WHERE updated=(SELECT MAX(updated) FROM chapters)', function(err, results, fields) {
     if(err) {
       callback(err, null);
     } else {
+      console.log('results in database: ', results)
       callback(null, results);
     }
   });
