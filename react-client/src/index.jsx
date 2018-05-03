@@ -3,6 +3,13 @@
 
 //ToDo: update database when vote
 
+//Make votes responsive to selections within the chapter:
+//https://stackoverflow.com/questions/5223412/window-getselection-add-class-to-selection-with-jquery
+
+//Homepage: onMouseOver, display iframe with webcam of the area (qTip), click on location to open chapter
+//https://developers.webcams.travel/
+
+//for future implementations, consider adding a toolbar with information about travel, fed/state/local infrastructure investment, competitions in the area, volunteering, airBnB, etc.
 //maybe next time use this, only saw this after setting up quill:
 //https://draftjs.org/
 
@@ -15,6 +22,7 @@ import ReactQuill from 'react-quill';
 import DeltaConverter from 'quill-delta-to-html';
 import List from './components/List.jsx';
 import Chapter from './components/Chapter.jsx';
+import Globe from './components/Globe.jsx';
 import Editor from './components/Editor.jsx';
 
 class App extends React.Component {
@@ -23,8 +31,8 @@ class App extends React.Component {
     this.state = {
       items: [],
       quillRef: {},
-      globeMode: false,
-      mode: 'chapter',
+      globeMode: true,
+      mode: 'globe',
       title: 'Boulder, CO',
       isHovering: false,
       votes: 0,
@@ -153,7 +161,8 @@ downVote() {
   click() {
     switch (this.state.mode) {
       case 'globe':
-        this.setState({mode: 'chapter'});
+        this.setState({mode: 'newEditor',
+          globeMode: !this.state.globeMode});
         break;
       case 'chapter':
         this.setState({mode: 'editor'});
@@ -161,6 +170,11 @@ downVote() {
       case 'editor':
         this.save();
         this.setState({mode: 'chapter'});
+        break;
+
+      case 'newEditor':
+        this.save();
+        this.setState({mode: 'globe'});
         break;
       default:
       console.log('mode not recognized')
@@ -179,10 +193,26 @@ downVote() {
       case 'editor':
         button = 'pull request';
         break;
+      case 'newEditor':
+        button = 'pull request';
+        break;
       default:
       console.log('mode not recognized')
     }
-  const mode = this.state.globeMode ? ( <Globe title={this.state.title} content={this.state.content} button={button}/> ) : ( <Chapter mode={this.state.mode} title={this.state.title} upVote={this.upVote} downVote={this.downVote} votes={this.state.votes} reveal={this.reveal} hide={this.hide} isHovering={this.state.isHovering} content={this.state.content} edit={this.edit} loadQR={this.loadQR} button={button}/> );
+    let mode;
+    switch (this.state.mode) {
+      case 'globe':
+        mode = <Globe title={this.state.title} content={this.state.content} button={button}/>;
+        break;
+      case 'chapter' || 'editor':
+        mode = <Chapter mode={this.state.mode} title={this.state.title} upVote={this.upVote} downVote={this.downVote} votes={this.state.votes} reveal={this.reveal} hide={this.hide} isHovering={this.state.isHovering} content={this.state.content} edit={this.edit} loadQR={this.loadQR} button={button}/>;
+        break;
+      case 'newEditor':
+        mode = <Editor />;
+        break;
+      default:
+      console.log('mode not recognized')
+    }
     return (<div>
       {mode}
       <button className="main" onClick={this.click}>{button}</button>

@@ -1,36 +1,44 @@
 import React from 'react';
+// import createRef from 'create-react-ref';
+import ReactQuill from 'react-quill';
+import $ from 'jquery';
+// import 'react-quill/dist/quill.snow.css';
+import ReactDOM from 'react-dom';
+import Quill from 'quill';
+import Delta from 'quill-delta';
 
-class Globe extends React.Component {
+
+class Editor extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      modules: {clipboard: {matchVisual: false}}
     }
-    // this.edit = this.edit.bind(this);
+    this.quillRef = null;
+    this.reactQuillRef = null;
   }
 
   componentDidMount() {
-
   }
 
-  // edit() {
-  //   // this.setState({editMode: !this.state.editMode})
-  //   console.log('Edit clicked!')
-  //   var editor = new Quill('.editor');
+  componentDidUpdate() {
+    if(this.quillRef === null && this.props.mode === 'editor' && typeof this.reactQuillRef.getEditor === 'function') {
+      this.quillRef = this.reactQuillRef.getEditor();
+      this.props.loadQR(this.quillRef)
+    }
+  }
 
-  // }
+
+
 
   render() {
     return (
-      <div>Globe
+      <div>
+      <h2 id="title" onMouseEnter={this.props.reveal} onMouseLeave={this.props.hide}>{this.props.title}</h2>
+      <ReactQuill className="content" ref={(el) => { this.reactQuillRef = el }} modules={this.state.modules} theme="bubble" />
       </div>
     )
   }
 }
 
-// const Editor = (props) => (
-//   <div className="editor">Editor
-//   <button>{props.button}</button>
-//   </div>
-// )
-
-export default Globe;
+export default Editor;

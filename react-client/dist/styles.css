@@ -1,5 +1,10 @@
+* {
+  font-family: 'Skranji', Palatino;
+}
+
 body {
   background-color: powderblue;
+  font-family: 'Skranji', Palatino;
 }
 
 /*.tooltiptext{
@@ -42,6 +47,10 @@ body {
   position: absolute;
   left: 20px;
   top: 120px;
+}
+
+.home {
+  vertical-align: top;
 }
 
 /*.chapter {
