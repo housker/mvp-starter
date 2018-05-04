@@ -1,6 +1,10 @@
 //ToDo: Sanitize editor input
 //https://github.com/quilljs/quill/issues/510
 
+//ToDo: newEditor autopopulates title with city name, pull request button adds chapter to database and city to pings (POST req).
+
+//ToDo: refactor swtich cases to use routes
+
 //ToDo: update database when vote
 
 //Make votes responsive to selections within the chapter:
@@ -29,11 +33,11 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      cities: ['Minneapolis, US', 'Boulder, US', 'Cambridge, UK', 'Boston, US', 'Asunicion, Paraguay'],
       items: [],
       quillRef: {},
-      globeMode: true,
       mode: 'globe',
-      title: 'Boulder, CO',
+      title: '',
       isHovering: false,
       votes: 0,
       content: { __html: '<p>There was a story.<span style="color:#003700;background-color:#cce8cc"> And this is the next part.</span></p>'}
@@ -46,6 +50,7 @@ class App extends React.Component {
     this.downVote = this.downVote.bind(this);
     this.reveal = this.reveal.bind(this);
     this.hide = this.hide.bind(this);
+    // this.selectChapter = this.selectChapter.bind(this);
   }
 
   componentDidMount() {
@@ -55,11 +60,11 @@ class App extends React.Component {
         var l = data
         this.setState({
           items: data[0],
-          title: data[0].title,
+          // title: data[0].title,
           content: {__html: data[0].content},
           votes: data[0].votes
         })
-        console.log("this.state.items: ", this.state.items)
+        // console.log("this.state.items: ", this.state.items)
       },
       error: (err) => {
         console.log('err', err);
@@ -158,21 +163,30 @@ downVote() {
   console.log(this.state.votes)
 }
 
+// selectChapter(e) {
+//   console.log('e inside selectChapter: ', e.target.value)
+//   this.state.cities.includes(e.target.value) ? this.setState({mode: 'chapter'}) : this.setState({mode: 'newEditor'})
+// }
+
   click() {
+    console.log('this.state.mode: ', this.state.mode)
     switch (this.state.mode) {
       case 'globe':
-        this.setState({mode: 'newEditor',
-          globeMode: !this.state.globeMode});
+          console.log('this.state.mode: ', this.state.mode)
+      let city = this.globe.cityInput.value;
+      this.state.cities.includes(city) ? this.setState({title: city, mode: 'chapter'}) : this.setState({mode: 'newEditor'})
         break;
       case 'chapter':
+          console.log('this.state.mode: ', this.state.mode)
         this.setState({mode: 'editor'});
         break;
       case 'editor':
+          console.log('this.state.mode: ', this.state.mode)
         this.save();
         this.setState({mode: 'chapter'});
         break;
-
       case 'newEditor':
+          console.log('this.state.mode: ', this.state.mode)
         this.save();
         this.setState({mode: 'globe'});
         break;
@@ -202,7 +216,7 @@ downVote() {
     let mode;
     switch (this.state.mode) {
       case 'globe':
-        mode = <Globe title={this.state.title} content={this.state.content} button={button}/>;
+        mode = <Globe ref={(el) => this.globe = el} mode={this.state.mode} title={this.state.title} content={this.state.content} cities={this.state.cities} button={button}/>;
         break;
       case 'chapter' || 'editor':
         mode = <Chapter mode={this.state.mode} title={this.state.title} upVote={this.upVote} downVote={this.downVote} votes={this.state.votes} reveal={this.reveal} hide={this.hide} isHovering={this.state.isHovering} content={this.state.content} edit={this.edit} loadQR={this.loadQR} button={button}/>;

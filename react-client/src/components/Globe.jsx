@@ -13,10 +13,11 @@ class Globe extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      cities: ['Minneapolis, US', 'Boulder, US', 'Cambridge, UK', 'Boston, US', 'Asunicion, Paraguay']
+      // cities: ['Minneapolis, US', 'Boulder, US', 'Cambridge, UK', 'Boston, US', 'Asunicion, Paraguay']
     }
     this.planet = undefined;
     this.geocoder = undefined;
+    this.cityInput = null;
     this.loadPlugin = this.loadPlugin.bind(this);
     this.getCoordinates = this.getCoordinates.bind(this);
     this.setPing = this.setPing.bind(this);
@@ -31,12 +32,14 @@ class Globe extends React.Component {
   }
 
   componentDidMount() {
+    // console.log('this.refs.cityInput: ', this.refs.cityInput)
+    // console.log('this.refs.dList.childNodes: ', this.refs.dList.childNodes)
     let planet = planetaryjs.planet();
     this.planet = planet;
     let geocoder =  new google.maps.Geocoder();
     this.geocoder = geocoder;
     this.loadPlugin();
-    this.state.cities.forEach(city => this.getCoordinates(city));
+    this.props.cities.forEach(city => this.getCoordinates(city));
     var canvas = document.getElementById('globe');
     planet.draw(canvas);
   }
@@ -53,9 +56,6 @@ class Globe extends React.Component {
   }
 
   getCoordinates(city) {
-    console.log('this.geocoder: ', this.geocoder)
-    console.log('this.setPing: ', this.setPing)
-    // var geocoder =  new google.maps.Geocoder();
     this.geocoder.geocode({'address': city}, (results, status) => {
       if (status == google.maps.GeocoderStatus.OK) {
         this.setPing(results[0].geometry.location.lng(), results[0].geometry.location.lat())
@@ -77,9 +77,17 @@ class Globe extends React.Component {
   }
 
   render() {
+    // console.log('this.props.cities: ', this.props.cities)
+    // this.props.cities.map(function(city) {
+    //       console.log('city:', city);
+    //     });
     return (
-      <div>
+      <div >
         <h2 className="home">Git Saga</h2>
+        <input ref={el => this.cityInput = el} className="cityInput" type="radio" list="data" type="text" placeholder="city, country" />
+        <datalist ref="dList" id="data" >
+        {this.props.cities.map((city, i) => <option key={i} value={city} />)}
+        </datalist>
         <canvas onClick={this.takeLocation} id='globe' width='750' height='750'></canvas>
       </div>
     )
