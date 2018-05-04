@@ -49,6 +49,7 @@ class App extends React.Component {
     this.quillRef = null;
     this.geocoder = undefined;
     this.oldContent = {};
+    this.loadCities = this.loadCities.bind(this);
     this.loadQR = this.loadQR.bind(this)
     this.click = this.click.bind(this);
     this.upVote = this.upVote.bind(this);
@@ -61,6 +62,7 @@ class App extends React.Component {
   componentDidMount() {
     let geocoder =  new google.maps.Geocoder();
     this.geocoder = geocoder;
+    this.loadCities();
     // $.ajax({
     //   url: '/items',
     //   success: (data) => {
@@ -77,6 +79,12 @@ class App extends React.Component {
     //     console.log('err', err);
     //   }
     // });
+  }
+
+  componentDidUpdate() {
+  }
+
+  loadCities() {
     $.ajax({
       url: '/cities',
       success: (data) => {
@@ -228,7 +236,8 @@ downVote() {
       case 'newEditor':
         this.save();
         this.setState({mode: 'globe'});
-              console.log('this.state.mode: ', this.state.mode)
+        this.loadCities()
+              console.log('At end of newEditor this.state.mode: ', this.state.mode)
         break;
       default:
       console.log('mode not recognized')
@@ -256,7 +265,7 @@ downVote() {
     let mode;
     switch (this.state.mode) {
       case 'globe':
-        mode = <Globe ref={(el) => this.globe = el} mode={this.state.mode} title={this.state.title} content={this.state.content} cities={this.state.cities} button={button}/>;
+        mode = <Globe ref={(el) => this.globe = el} mode={this.state.mode} title={this.state.title} content={this.state.content}  cities={this.state.cities} button={button}/>;
         break;
       case 'chapter':
         mode = <Chapter mode={this.state.mode} title={this.state.title} upVote={this.upVote} downVote={this.downVote} votes={this.state.votes} reveal={this.reveal} hide={this.hide} isHovering={this.state.isHovering} content={this.state.content} edit={this.edit} loadQR={this.loadQR} button={button}/>;

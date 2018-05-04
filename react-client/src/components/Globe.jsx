@@ -24,11 +24,11 @@ class Globe extends React.Component {
     this.takeLocation = this.takeLocation.bind(this);
 
 
-    planetaryjs.plugins.drag({
-      onDrag: function() {
-        console.log("The planet was dragged!", this, d3.event);
-      }
-    });
+    // planetaryjs.plugins.drag({
+    //   onDrag: function() {
+    //     console.log("The planet was dragged!", this, d3.event);
+    //   }
+    // });
   }
 
   componentDidMount() {
@@ -39,9 +39,13 @@ class Globe extends React.Component {
     let geocoder =  new google.maps.Geocoder();
     this.geocoder = geocoder;
     this.loadPlugin();
-    this.props.cities.forEach(city => this.getCoordinates(city));
+    // this.props.cities.forEach(city => this.getCoordinates(city));
     var canvas = document.getElementById('globe');
     planet.draw(canvas);
+  }
+
+  componentDidUpdate() {
+    this.props.cities.forEach(city => this.getCoordinates(city));
   }
 
   loadPlugin() {
