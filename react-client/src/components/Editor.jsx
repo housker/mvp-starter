@@ -19,13 +19,14 @@ class Editor extends React.Component {
   }
 
   componentDidMount() {
-  }
-
-  componentDidUpdate() {
-    if(this.quillRef === null && this.props.mode === 'editor' && typeof this.reactQuillRef.getEditor === 'function') {
+    if(this.quillRef === null && typeof this.reactQuillRef.getEditor === 'function') {
       this.quillRef = this.reactQuillRef.getEditor();
       this.props.loadQR(this.quillRef)
     }
+  }
+
+  componentDidUpdate() {
+
   }
 
 

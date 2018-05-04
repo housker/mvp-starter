@@ -3,7 +3,9 @@
 
 //ToDo: newEditor autopopulates title with city name, pull request button adds chapter to database and city to pings (POST req).
 
-//ToDo: refactor swtich cases to use routes
+//ToDo: refactor swtich cases to use routes, so you can use the back button to get to the globe
+//On componentDidMount in index.jsx, query database for all cities(titles), eliminate duplicates by grabbing max of id
+//On componentDidMount in Chapter, grab the most recent for that title, and setState of conent then.
 
 //ToDo: update database when vote
 
@@ -172,23 +174,24 @@ downVote() {
     console.log('this.state.mode: ', this.state.mode)
     switch (this.state.mode) {
       case 'globe':
-          console.log('this.state.mode: ', this.state.mode)
       let city = this.globe.cityInput.value;
-      this.state.cities.includes(city) ? this.setState({title: city, mode: 'chapter'}) : this.setState({mode: 'newEditor'})
+      this.setState({title: city})
+      this.state.cities.includes(city) ? this.setState({mode: 'chapter'}): this.setState({mode: 'newEditor'})
+            // console.log('this.state.mode: ', this.state.mode)
         break;
       case 'chapter':
-          console.log('this.state.mode: ', this.state.mode)
         this.setState({mode: 'editor'});
+        console.log('this.state.mode: ', this.state.mode)
         break;
       case 'editor':
-          console.log('this.state.mode: ', this.state.mode)
         this.save();
         this.setState({mode: 'chapter'});
+                 console.log('this.state.mode: ', this.state.mode)
         break;
       case 'newEditor':
-          console.log('this.state.mode: ', this.state.mode)
         this.save();
         this.setState({mode: 'globe'});
+              console.log('this.state.mode: ', this.state.mode)
         break;
       default:
       console.log('mode not recognized')
@@ -218,11 +221,14 @@ downVote() {
       case 'globe':
         mode = <Globe ref={(el) => this.globe = el} mode={this.state.mode} title={this.state.title} content={this.state.content} cities={this.state.cities} button={button}/>;
         break;
-      case 'chapter' || 'editor':
+      case 'chapter':
+        mode = <Chapter mode={this.state.mode} title={this.state.title} upVote={this.upVote} downVote={this.downVote} votes={this.state.votes} reveal={this.reveal} hide={this.hide} isHovering={this.state.isHovering} content={this.state.content} edit={this.edit} loadQR={this.loadQR} button={button}/>;
+        break;
+      case 'editor':
         mode = <Chapter mode={this.state.mode} title={this.state.title} upVote={this.upVote} downVote={this.downVote} votes={this.state.votes} reveal={this.reveal} hide={this.hide} isHovering={this.state.isHovering} content={this.state.content} edit={this.edit} loadQR={this.loadQR} button={button}/>;
         break;
       case 'newEditor':
-        mode = <Editor />;
+        mode = <Editor title={this.state.title} loadQR={this.loadQR} />;
         break;
       default:
       console.log('mode not recognized')
