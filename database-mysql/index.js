@@ -12,15 +12,46 @@ var selectAll = function(callback) {
     if(err) {
       callback(err, null);
     } else {
+      // console.log('results in database: ', results)
+      callback(null, results);
+    }
+  });
+};
+
+var selectTitles = function(callback) {
+  console.log('selectTitles is being called!')
+  connection.query('SELECT title FROM chapters GROUP by title', function(err, results, fields) {
+    if(err) {
+      callback(err, null);
+    } else {
       console.log('results in database: ', results)
       callback(null, results);
     }
   });
 };
 
+// var selectTitles = function(callback) {
+//   connection.query('SELECT * FROM ', function(err, results, fields) {
+//     if(err) {
+//       callback(err, null);
+//     } else {
+//       callback(null, results);
+//     }
+//   });
+// };
+
+// SELECT ID, Val, Kind FROM
+// (
+//    SELECT First_Value(ID) OVER (PARTITION BY Val ORDER BY Kind) First, ID, Val, Kind
+//    FROM mytable
+// )
+// WHERE ID = First;
+
+var putVotes = function(callback) {
+
+};
+
 var insert = function(body, callback) {
-  console.log('body in database: ', body)
-  console.log('callback in database: ', callback)
   var values = [body.title, body.content, body.votes]
   connection.query('INSERT INTO chapters (title, content, votes) VALUES(?, ?, ?)', values, function(err, results, fields) {
     if(err) {
@@ -32,4 +63,6 @@ var insert = function(body, callback) {
 }
 
 module.exports.selectAll = selectAll;
+module.exports.selectTitles = selectTitles;
+module.exports.putVotes = putVotes;
 module.exports.insert = insert;

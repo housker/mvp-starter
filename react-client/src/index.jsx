@@ -1,3 +1,5 @@
+//ToDo: Get dave function of newEditor to work
+
 //ToDo: Sanitize editor input
 //https://github.com/quilljs/quill/issues/510
 
@@ -45,6 +47,7 @@ class App extends React.Component {
       content: { __html: '<p>There was a story.<span style="color:#003700;background-color:#cce8cc"> And this is the next part.</span></p>'}
     }
     this.quillRef = null;
+    this.geocoder = undefined;
     this.oldContent = {};
     this.loadQR = this.loadQR.bind(this)
     this.click = this.click.bind(this);
@@ -56,15 +59,36 @@ class App extends React.Component {
   }
 
   componentDidMount() {
+    let geocoder =  new google.maps.Geocoder();
+    this.geocoder = geocoder;
+    // $.ajax({
+    //   url: '/items',
+    //   success: (data) => {
+    //     var l = data
+    //     this.setState({
+    //       items: data[0],
+    //       // title: data[0].title,
+    //       content: {__html: data[0].content},
+    //       votes: data[0].votes
+    //     })
+    //     // console.log("this.state.items: ", this.state.items)
+    //   },
+    //   error: (err) => {
+    //     console.log('err', err);
+    //   }
+    // });
     $.ajax({
-      url: '/items',
+      url: '/cities',
       success: (data) => {
-        var l = data
+        console.log('data from cities request: ', data)
+        var cities = data.map(obj => obj.title);
+        console.log('titles: ', cities)
         this.setState({
-          items: data[0],
-          // title: data[0].title,
-          content: {__html: data[0].content},
-          votes: data[0].votes
+          cities: cities
+        //   items: data[0],
+        //   // title: data[0].title,
+        //   content: {__html: data[0].content},
+        //   votes: data[0].votes
         })
         // console.log("this.state.items: ", this.state.items)
       },
@@ -174,10 +198,23 @@ downVote() {
     console.log('this.state.mode: ', this.state.mode)
     switch (this.state.mode) {
       case 'globe':
-      let city = this.globe.cityInput.value;
-      this.setState({title: city})
-      this.state.cities.includes(city) ? this.setState({mode: 'chapter'}): this.setState({mode: 'newEditor'})
-            // console.log('this.state.mode: ', this.state.mode)
+        let city = this.globe.cityInput.value;
+        this.setState({title: city});
+        if(this.state.cities.includes(city)) {
+          this.setState({mode: 'chapter'})
+        }
+         // else {
+          console.log('this.geocoder: ', this.geocoder)
+          this.geocoder.geocode({'address': city}, (results, status) => {
+            if (status == google.maps.GeocoderStatus.OK) {
+              console.log('OK!');
+              this.setState({mode: 'newEditor'});
+              // this.setPing(results[0].geometry.location.lng(), results[0].geometry.location.lat())
+            // } else {
+              console.log(status);
+            // }
+          }
+        });
         break;
       case 'chapter':
         this.setState({mode: 'editor'});

@@ -26,6 +26,16 @@ app.get('/items', function (req, res) {
   });
 });
 
+app.get('/cities', function (req, res) {
+  items.selectTitles(function(err, data) {
+    if(err) {
+      res.sendStatus(500);
+    } else {
+      res.json(data);
+    }
+  });
+});
+
 app.post('/items', function (req, res) {
   // console.log('req.body in server: ', req.body.title, req.body.content, req.body.votes)
   items.insert(req.body, function(err, data) {
