@@ -1,3 +1,4 @@
+//globe-in-the-cloud or planet
 import React from 'react';
 // import createRef from 'create-react-ref';
 import ReactQuill from 'react-quill';
