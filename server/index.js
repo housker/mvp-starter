@@ -38,7 +38,7 @@ app.get('/items*', function (req, res) {
     if(err) {
       res.sendStatus(500);
     } else {
-      console.log('data in server gotten from selectChapter: ', data)
+      // console.log('data in server gotten from selectChapter: ', data)
       res.json(data);
     }
   });
@@ -71,6 +71,29 @@ app.post('/items', function (req, res) {
   //   }
   // });
 });
+
+app.put('/votes', function (req, res) {
+  console.log('req.body in server put: ', req.body)
+  items.updateVotes(req.body, function(err, data) {
+    if(err) {
+      console.log('error: ', error)
+      res.sendStatus(500);
+    } else {
+      console.log('data in server put votes: ', data)
+      res.json(data);
+    }
+  });
+  // items.insert(req.body, function(err, data) {
+  //   if(err) {
+  //     res.sendStatus(500);
+  //   } else {
+  //     res.json(data);
+  //   }
+  // });
+});
+
+
+
 
 app.listen(3000, function() {
   console.log('listening on port 3000!');

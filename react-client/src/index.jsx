@@ -185,18 +185,38 @@ hide() {
 }
 
 upVote() {
-  // fetch('/items', {
-  //   method: 'PUT'
-  // })
   this.setState({votes: ++this.state.votes});
+  fetch('/votes', {
+    method: 'PUT',
+    body: JSON.stringify({
+      votes: this.state.votes,
+      title: this.state.title
+    }),
+    headers: {
+      'content-type': 'application/json'
+    }
+  })
+  .then(res => res.json())
+  .then(jsonRes => console.log('jsonRes: ', jsonRes))
+  .catch(err => console.log(err));
   console.log(this.state.votes)
 }
 
 downVote() {
-  // fetch('/items', {
-  //   method: 'PUT'
-  // })
   this.setState({votes: --this.state.votes});
+  fetch('/votes', {
+    method: 'PUT',
+    body: JSON.stringify({
+      votes: this.state.votes,
+      title: this.state.title
+    }),
+    headers: {
+      'content-type': 'application/json'
+    }
+  })
+  .then(res => res.json())
+  .then(jsonRes => console.log('jsonRes: ', jsonRes))
+  .catch(err => console.log(err));
   console.log(this.state.votes)
 }
 

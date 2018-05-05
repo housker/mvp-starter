@@ -8,19 +8,19 @@ var connection = mysql.createConnection({
 });
 
 var selectChapter = function(title, callback) {
-  console.log('title in databse selectChapter: ', title)
+  // console.log('title in databse selectChapter: ', title)
   connection.query(`SELECT * FROM chapters WHERE title = '${title}' ORDER BY updated LIMIT 1`, function(err, results, fields) {
     if(err) {
       console.log('Error in database trying to find select')
       callback(err, null);
     } else {
-      console.log('results in database selectChapter: ', results)
+      // console.log('results in database selectChapter: ', results)
       callback(null, results);
     }
   });
 
 
-
+// UPDATE chapters SET votes = ${body.votes} WHERE id = (SELECT id FROM chapters WHERE title = '${body.title}' ORDER BY updated LIMIT 1)
 // `SELECT * FROM chapters WHERE title = ${title} ORDER BY updated LIMIT 1`
 // (`SELECT * FROM chapters WHERE title = ${title} AND updated = (SELECT MAX(updated) FROM chapters)`
   // connection.query(`SELECT * FROM chapters WHERE (updated=(SELECT MAX(updated) AND title = ${title}) FROM chapters)`, function(err, results, fields) {
@@ -70,9 +70,21 @@ var selectTitles = function(callback) {
 // )
 // WHERE ID = First;
 
-var putVotes = function(callback) {
+var updateVotes = function(body, callback) {
+  console.log('this is body in database updateVotes: ', typeof body.votes)
+  connection.query(`UPDATE chapters SET votes = ${body.votes} WHERE id IN (SELECT id FROM (SELECT id FROM chapters WHERE title = '${body.title}' ORDER BY updated LIMIT 1) AS temp)`, function(err, results, fields) {
+  // connection.query(`SELECT id FROM chapters WHERE title = '${body.title}' ORDER BY updated LIMIT 1`, function(err, results, fields) {
+    if(err) {
+      callback(err, null);
+    } else {
+      console.log('These are the results in updateVotes: ', results)
+      callback(null, results);
+    }
+  })
 
 };
+
+// title = ${body.title}` AND updated = (SELECT MAX(updated) FROM chapters)
 
 var insert = function(body, callback) {
   var values = [body.title, body.content, body.votes]
@@ -87,5 +99,5 @@ var insert = function(body, callback) {
 
 module.exports.selectChapter = selectChapter;
 module.exports.selectTitles = selectTitles;
-module.exports.putVotes = putVotes;
+module.exports.updateVotes = updateVotes;
 module.exports.insert = insert;
