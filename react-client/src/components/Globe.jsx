@@ -51,7 +51,7 @@ class Globe extends React.Component {
   loadPlugin() {
     this.planet.loadPlugin(planetaryjs.plugins.earth({
       topojson: { file: './world-110m.json' },
-      oceans:   { fill:  '#b0e0e6'},
+      oceans:   { fill:  '#497287'},
       land:     { fill: '#000000'},
       borders:  { stroke: '#de8048'}
     }));
@@ -86,11 +86,11 @@ class Globe extends React.Component {
     //       console.log('city:', city);
     //     });
     return (
-      <div >
-        <h2 className="home">Git Saga</h2>
-        <input ref={el => this.cityInput = el} className="cityInput" type="radio" list="data" type="text" placeholder="city, country" />
-        <datalist ref="dList" id="data" >
-        {this.props.cities.map((city, i) => <option key={i} value={city} />)}
+      <div>
+        <h2 className="title">Git Saga</h2>
+        <input ref={el => this.cityInput = el} className="cityInput" name="data" type="radio" list="data" type="text" placeholder="city, country" />
+        <datalist className="dropdown" ref="dList" id="data" >
+        {this.props.cities.map((city, i) => <option className="dropdown" key={i} value={city} />)}
         </datalist>
         <canvas onClick={this.takeLocation} id='globe' width='750' height='750'></canvas>
       </div>

@@ -52,16 +52,11 @@ body {
 
 .home {
   vertical-align: top;
-/*  position: fixed;  or absolute
-  top: 50%;
-  left: 50%;*/
 }
 
-/*.cityInput {
-  position: fixed;  or absolute
-  top: 50%;
-  left: 50%;
-}*/
+.cityInput {
+  vertical-align: top;
+}
 
 /*.chapter {
   display: block;

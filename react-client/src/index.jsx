@@ -57,6 +57,7 @@ class App extends React.Component {
     this.downVote = this.downVote.bind(this);
     this.reveal = this.reveal.bind(this);
     this.hide = this.hide.bind(this);
+    this.updateVotes = this.updateVotes.bind(this);
     // this.selectChapter = this.selectChapter.bind(this);
   }
 
@@ -96,7 +97,7 @@ class App extends React.Component {
     $.ajax({
       url: `/items/${this.state.title}`,
       success: (data) => {
-        console.log('data in loadChater: ', data)
+        // console.log('data in loadChapter: ', data)
         this.setState({
           items: data[0],
           // title: data[0].title,
@@ -186,29 +187,36 @@ hide() {
 
 upVote() {
   this.setState({votes: ++this.state.votes});
-  fetch('/votes', {
-    method: 'PUT',
-    body: JSON.stringify({
-      votes: this.state.votes,
-      title: this.state.title
-    }),
-    headers: {
-      'content-type': 'application/json'
-    }
-  })
-  .then(res => res.json())
-  .then(jsonRes => console.log('jsonRes: ', jsonRes))
-  .catch(err => console.log(err));
-  console.log(this.state.votes)
+  this.updateVotes();
+  //if votes is ten, get rid of formatting, make permanent
 }
 
 downVote() {
   this.setState({votes: --this.state.votes});
+  this.updateVotes();
+  //if votes is negative five, revert to earlier
+  //if !permanent && there are no earlier chapters, delete city
+}
+
+updateVotes() {
+  console.log('updateVotes is being called!')
+  var xmlString = this.state.content.__html;
+  var parser = new DOMParser();
+  var doc = parser.parseFromString(xmlString, "text/xml");
+  console.log('doc: ', doc)
+  console.log('doc.childNodes: ', doc.childNodes)
+  var childContent = doc.childNodes[0].textContent;
+  // var child2 = child1.textContent;
+  // console.log('child2: ', child2);
+  this.setState({content: { __html: `<p>${childContent}</p>`}})
+  // doc.removeChild(span)
+  // console.log('doc after removeChildspan: ', doc)
   fetch('/votes', {
     method: 'PUT',
     body: JSON.stringify({
       votes: this.state.votes,
-      title: this.state.title
+      title: this.state.title,
+      content: this.state.content
     }),
     headers: {
       'content-type': 'application/json'
@@ -217,7 +225,7 @@ downVote() {
   .then(res => res.json())
   .then(jsonRes => console.log('jsonRes: ', jsonRes))
   .catch(err => console.log(err));
-  console.log(this.state.votes)
+
 }
 
 // selectChapter(e) {

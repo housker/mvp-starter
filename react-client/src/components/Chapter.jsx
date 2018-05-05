@@ -37,8 +37,8 @@ class Chapter extends React.Component {
     const mode = this.props.mode === 'editor' ? ( <ReactQuill className="content" ref={(el) => { this.reactQuillRef = el }} modules={this.state.modules} theme="bubble" value={this.props.content.__html} onChange={this._handleChange} onChangeSelection={this._handleChangeSelection} /> ) : ( <div className="content" dangerouslySetInnerHTML={this.props.content} ></div> );
     return (
       <div>
-      <h2 id="title" onMouseEnter={this.props.reveal} onMouseLeave={this.props.hide}>{this.props.title}</h2>
-      {this.props.isHovering && <nav className="votes">
+      <h2 id="title" className="title" onMouseEnter={this.props.reveal} onMouseLeave={this.props.hide}>{this.props.title}</h2>
+      {this.props.isHovering && this.props.mode === "chapter" && <nav className="votes">
       <input onClick={this.props.upVote} className="button" type="image" src="chevron-up.png" />
       <input onClick={this.props.downVote} className="button" type="image" src="chevron-down.png" />
       </nav>}
