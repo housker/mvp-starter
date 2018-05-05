@@ -51,7 +51,7 @@ class Globe extends React.Component {
   loadPlugin() {
     this.planet.loadPlugin(planetaryjs.plugins.earth({
       topojson: { file: './world-110m.json' },
-      oceans:   { fill:  '#497287'},
+      oceans:   { fill:  '#b0e0e6'},
       land:     { fill: '#000000'},
       borders:  { stroke: '#de8048'}
     }));

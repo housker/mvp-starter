@@ -1,5 +1,6 @@
 * {
-  font-family: 'Skranji', Palatino;
+  /*font-family: 'Skranji', Palatino;*/
+  font-family: 'Montserrat', sans-serif;
 }
 
 body {
@@ -51,7 +52,16 @@ body {
 
 .home {
   vertical-align: top;
+/*  position: fixed;  or absolute
+  top: 50%;
+  left: 50%;*/
 }
+
+/*.cityInput {
+  position: fixed;  or absolute
+  top: 50%;
+  left: 50%;
+}*/
 
 /*.chapter {
   display: block;

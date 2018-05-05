@@ -7,24 +7,47 @@ var connection = mysql.createConnection({
   database : 'test'
 });
 
-var selectAll = function(callback) {
-  connection.query('SELECT * FROM chapters WHERE updated=(SELECT MAX(updated) FROM chapters)', function(err, results, fields) {
+var selectChapter = function(title, callback) {
+  console.log('title in databse selectChapter: ', title)
+  connection.query(`SELECT * FROM chapters WHERE title = '${title}' ORDER BY updated LIMIT 1`, function(err, results, fields) {
     if(err) {
+      console.log('Error in database trying to find select')
       callback(err, null);
     } else {
-      // console.log('results in database: ', results)
+      console.log('results in database selectChapter: ', results)
       callback(null, results);
     }
   });
+
+
+
+// `SELECT * FROM chapters WHERE title = ${title} ORDER BY updated LIMIT 1`
+// (`SELECT * FROM chapters WHERE title = ${title} AND updated = (SELECT MAX(updated) FROM chapters)`
+  // connection.query(`SELECT * FROM chapters WHERE (updated=(SELECT MAX(updated) AND title = ${title}) FROM chapters)`, function(err, results, fields) {
+  //   if(err) {
+  //     console.log('Error in database trying to find select')
+  //     callback(err, null);
+  //   } else {
+  //     // console.log('results in database: ', results)
+  //     callback(null, results);
+  //   }
+  // });
+
+  // results in database selectChapter:  [ RowDataPacket {
+  //   id: 1,
+  //   title: 'Houston, TX',
+  //   content: '<p>There was a story.</p>',
+  //   votes: 3,
+  //   updated: 2018-05-02T20:30:28.000Z } ]
+
 };
 
 var selectTitles = function(callback) {
-  console.log('selectTitles is being called!')
   connection.query('SELECT title FROM chapters GROUP by title', function(err, results, fields) {
     if(err) {
       callback(err, null);
     } else {
-      console.log('results in database: ', results)
+      // console.log('results in database: ', results)
       callback(null, results);
     }
   });
@@ -62,7 +85,7 @@ var insert = function(body, callback) {
   })
 }
 
-module.exports.selectAll = selectAll;
+module.exports.selectChapter = selectChapter;
 module.exports.selectTitles = selectTitles;
 module.exports.putVotes = putVotes;
 module.exports.insert = insert;

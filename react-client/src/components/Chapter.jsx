@@ -20,6 +20,7 @@ class Chapter extends React.Component {
 
   componentDidMount() {
         console.log('this.props.mode: ', this.props.mode)
+    this.props.loadChapter();
   }
 
   componentDidUpdate() {

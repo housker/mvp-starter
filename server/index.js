@@ -1,6 +1,7 @@
 var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
+const url = require('url');
 // UNCOMMENT THE DATABASE YOU'D LIKE TO USE
 var items = require('../database-mysql');
 // var items = require('../database-mongo');
@@ -16,11 +17,28 @@ app.use(express.static(__dirname + '/../react-client/dist'));
 // app.use(express.static(__dirname + '/../angular-client'));
 // app.use(express.static(__dirname + '/../node_modules'));
 
-app.get('/items', function (req, res) {
-  items.selectAll(function(err, data) {
+app.get('/items*', function (req, res) {
+
+// const myURL = url.parse(req.url);
+// console.log('myUrl: ', myURL)
+
+// const myURL = new URL('https://example.org/abc/xyz?123');
+// console.log(myURL.pathname);
+// // Prints /abc/xyz
+
+// myURL.pathname = '/abcdef';
+// console.log(myURL.href);
+// // Prints https://example.org/abcdef?123
+
+
+
+  var title = decodeURI(req.url.slice(7));
+  console.log('title: ', title)
+  items.selectChapter(title, function(err, data) {
     if(err) {
       res.sendStatus(500);
     } else {
+      console.log('data in server gotten from selectChapter: ', data)
       res.json(data);
     }
   });

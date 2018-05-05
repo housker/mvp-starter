@@ -50,6 +50,7 @@ class App extends React.Component {
     this.geocoder = undefined;
     this.oldContent = {};
     this.loadCities = this.loadCities.bind(this);
+    this.loadChapter = this.loadChapter.bind(this);
     this.loadQR = this.loadQR.bind(this)
     this.click = this.click.bind(this);
     this.upVote = this.upVote.bind(this);
@@ -63,22 +64,6 @@ class App extends React.Component {
     let geocoder =  new google.maps.Geocoder();
     this.geocoder = geocoder;
     this.loadCities();
-    // $.ajax({
-    //   url: '/items',
-    //   success: (data) => {
-    //     var l = data
-    //     this.setState({
-    //       items: data[0],
-    //       // title: data[0].title,
-    //       content: {__html: data[0].content},
-    //       votes: data[0].votes
-    //     })
-    //     // console.log("this.state.items: ", this.state.items)
-    //   },
-    //   error: (err) => {
-    //     console.log('err', err);
-    //   }
-    // });
   }
 
   componentDidUpdate() {
@@ -106,8 +91,26 @@ class App extends React.Component {
     });
   }
 
-  // componentDidUpdate() {
-  // }
+  loadChapter() {
+    console.log('loadChapter is being called!')
+    $.ajax({
+      url: `/items/${this.state.title}`,
+      success: (data) => {
+        console.log('data in loadChater: ', data)
+        this.setState({
+          items: data[0],
+          // title: data[0].title,
+          content: {__html: data[0].content},
+          votes: data[0].votes
+        })
+        // console.log("this.state.items: ", this.state.items)
+      },
+      error: (err) => {
+        console.log('err', err);
+      }
+    });
+
+  }
 
   loadQR(qr) {
     this.quillRef = qr;
@@ -208,11 +211,15 @@ downVote() {
       case 'globe':
         let city = this.globe.cityInput.value;
         this.setState({title: city});
-        if(this.state.cities.includes(city)) {
-          this.setState({mode: 'chapter'})
-        }
+        // if(this.state.cities.includes(city)) {
+        //   console.log("Match to cities")
+        //   this.setState({mode: 'chapter'})
+        // }
+
+        this.state.cities.includes(city) ? this.setState({mode: 'chapter'}) :
+
          // else {
-          console.log('this.geocoder: ', this.geocoder)
+          // console.log('this.geocoder: ', this.geocoder)
           this.geocoder.geocode({'address': city}, (results, status) => {
             if (status == google.maps.GeocoderStatus.OK) {
               console.log('OK!');
@@ -268,7 +275,7 @@ downVote() {
         mode = <Globe ref={(el) => this.globe = el} mode={this.state.mode} title={this.state.title} content={this.state.content}  cities={this.state.cities} button={button}/>;
         break;
       case 'chapter':
-        mode = <Chapter mode={this.state.mode} title={this.state.title} upVote={this.upVote} downVote={this.downVote} votes={this.state.votes} reveal={this.reveal} hide={this.hide} isHovering={this.state.isHovering} content={this.state.content} edit={this.edit} loadQR={this.loadQR} button={button}/>;
+        mode = <Chapter mode={this.state.mode} title={this.state.title} upVote={this.upVote} downVote={this.downVote} votes={this.state.votes} reveal={this.reveal} hide={this.hide} isHovering={this.state.isHovering} content={this.state.content} edit={this.edit} loadQR={this.loadQR} loadChapter={this.loadChapter} button={button}/>;
         break;
       case 'editor':
         mode = <Chapter mode={this.state.mode} title={this.state.title} upVote={this.upVote} downVote={this.downVote} votes={this.state.votes} reveal={this.reveal} hide={this.hide} isHovering={this.state.isHovering} content={this.state.content} edit={this.edit} loadQR={this.loadQR} button={button}/>;
