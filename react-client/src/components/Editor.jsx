@@ -36,7 +36,7 @@ class Editor extends React.Component {
     return (
       <div>
       <h2 id="title" onMouseEnter={this.props.reveal} onMouseLeave={this.props.hide}>{this.props.title}</h2>
-      <ReactQuill className="content" ref={(el) => { this.reactQuillRef = el }} modules={this.state.modules} theme="bubble" />
+      <ReactQuill className="editor" placeholder={"A new chapter begins . . ."} className="content" ref={(el) => { this.reactQuillRef = el }} modules={this.state.modules} theme="bubble" />
       </div>
     )
   }

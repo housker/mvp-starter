@@ -71,22 +71,62 @@ var selectTitles = function(callback) {
 // WHERE ID = First;
 
 var updateVotes = function(body, callback) {
-  console.log('this is body in database updateVotes: ', typeof body.votes)
-  connection.query(`UPDATE chapters SET votes = ${body.votes} WHERE id IN (SELECT id FROM (SELECT id FROM chapters WHERE title = '${body.title}' ORDER BY updated LIMIT 1) AS temp)`, function(err, results, fields) {
-  // connection.query(`SELECT id FROM chapters WHERE title = '${body.title}' ORDER BY updated LIMIT 1`, function(err, results, fields) {
-    if(err) {
-      callback(err, null);
-    } else {
-      console.log('These are the results in updateVotes: ', results)
-      callback(null, results);
-    }
-  })
+  if(body.votes > 10) {
+    console.log("Database updateVotes - There are more than ten votes.")
+    connection.query(`DELETE from chapters WHERE title = '${body.title}'`, function(err, results, fields) {
+      if(err) {
+        callback(err, null);
+      } else {
+        console.log('These are the results in updateVotes: ', results)
+        var values = [body.title, body.content, body.votes]
+        console.log('values in updateVotes: ', values)
+        connection.query('INSERT INTO chapters (title, content, votes) VALUES(?, ?, ?)', values, function(err, results, fields) {
+          if(err) {
+            callback(err, null);
+          } else {
+            callback(null, results);
+          }
+        })
+      }
+    })
+    // var values = [body.title, body.content, body.votes]
+    // connection.query('INSERT INTO chapters (title, content, votes) VALUES(?, ?, ?)', values, function(err, results, fields) {
+    //   if(err) {
+    //     callback(err, null);
+    //   } else {
+    //     callback(null, results);
+    //   }
+    // })
+  } else if(body.votes < -5) {
+    console.log("Database updateVotes - There are less than neg five votes.")
+    connection.query(`DELETE from chapters WHERE title = ${body.title}`, function(err, results, fields) {
+      if(err) {
+        callback(err, null);
+      } else {
+        console.log('These are the results in updateVotes: ', results)
+        callback(null, results);
+      }
+    })
+  } else {
+    console.log("Database updateVotes - There are between neg five votes and ten votes.")
+    connection.query(`UPDATE chapters SET votes = ${body.votes} WHERE id IN (SELECT id FROM (SELECT id FROM chapters WHERE title = '${body.title}' ORDER BY updated LIMIT 1) AS temp)`, function(err, results, fields) {
+    // connection.query(`SELECT id FROM chapters WHERE title = '${body.title}' ORDER BY updated LIMIT 1`, function(err, results, fields) {
+      if(err) {
+        callback(err, null);
+      } else {
+        console.log('These are the results in updateVotes: ', results)
+        callback(null, results);
+      }
+    })
+  }
+
 
 };
 
 // title = ${body.title}` AND updated = (SELECT MAX(updated) FROM chapters)
 
 var insert = function(body, callback) {
+  console.log('this is body.content in database insert: ', body.content)
   var values = [body.title, body.content, body.votes]
   connection.query('INSERT INTO chapters (title, content, votes) VALUES(?, ?, ?)', values, function(err, results, fields) {
     if(err) {

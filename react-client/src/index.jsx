@@ -1,5 +1,7 @@
 //ToDo: Get dave function of newEditor to work
 
+//Actually, scratch that, aqutomatically goes into editor, don't need to press button. Bug: when I click for editor after initing a new chapter, sends me to home screen when it should send me to editor and THEN homescreen -- or better yet, have small globe in upper right hand corner that can click to get back from chapter or editor.
+
 //ToDo: Sanitize editor input
 //https://github.com/quilljs/quill/issues/510
 
@@ -187,28 +189,47 @@ hide() {
 
 upVote() {
   this.setState({votes: ++this.state.votes});
-  this.updateVotes();
+  if(this.state.votes > 10) {
+
+  let xmlString = this.state.content.__html;
+  let parser = new DOMParser();
+  let doc = parser.parseFromString(xmlString, "text/xml");
+  var childContent = doc.childNodes[0].textContent;
+  // var child2 = child1.textContent;
+  // console.log('child2: ', child2);
+  this.setState({content: { __html: `<p>${childContent}</p>`}}, () => {
+    console.log('this.state.content: ', this.state.content)
+    this.updateVotes();
+  })
+
+  }
+  // this.updateVotes();
   //if votes is ten, get rid of formatting, make permanent
 }
 
 downVote() {
-  this.setState({votes: --this.state.votes});
-  this.updateVotes();
+  this.setState({votes: --this.state.votes}, () => {
+    this.updateVotes();
+    if(this.state.votes < 5) {
+      this.setState({mode: 'globe'});
+    }
+  });
+  // this.updateVotes();
   //if votes is negative five, revert to earlier
   //if !permanent && there are no earlier chapters, delete city
 }
 
 updateVotes() {
-  console.log('updateVotes is being called!')
-  var xmlString = this.state.content.__html;
-  var parser = new DOMParser();
-  var doc = parser.parseFromString(xmlString, "text/xml");
-  console.log('doc: ', doc)
-  console.log('doc.childNodes: ', doc.childNodes)
-  var childContent = doc.childNodes[0].textContent;
-  // var child2 = child1.textContent;
-  // console.log('child2: ', child2);
-  this.setState({content: { __html: `<p>${childContent}</p>`}})
+  // console.log('updateVotes is being called!')
+  // var xmlString = this.state.content.__html;
+  // var parser = new DOMParser();
+  // var doc = parser.parseFromString(xmlString, "text/xml");
+  // console.log('doc: ', doc)
+  // console.log('doc.childNodes: ', doc.childNodes)
+  // var childContent = doc.childNodes[0].textContent;
+  // // var child2 = child1.textContent;
+  // // console.log('child2: ', child2);
+  // this.setState({content: { __html: `<p>${childContent}</p>`}})
   // doc.removeChild(span)
   // console.log('doc after removeChildspan: ', doc)
   fetch('/votes', {
@@ -216,7 +237,7 @@ updateVotes() {
     body: JSON.stringify({
       votes: this.state.votes,
       title: this.state.title,
-      content: this.state.content
+      content: this.state.content.__html
     }),
     headers: {
       'content-type': 'application/json'
@@ -309,7 +330,7 @@ updateVotes() {
         mode = <Chapter mode={this.state.mode} title={this.state.title} upVote={this.upVote} downVote={this.downVote} votes={this.state.votes} reveal={this.reveal} hide={this.hide} isHovering={this.state.isHovering} content={this.state.content} edit={this.edit} loadQR={this.loadQR} button={button}/>;
         break;
       case 'newEditor':
-        mode = <Editor title={this.state.title} loadQR={this.loadQR} />;
+        mode = <Editor className="editor" title={this.state.title} loadQR={this.loadQR} />;
         break;
       default:
       console.log('mode not recognized')

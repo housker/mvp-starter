@@ -76,7 +76,7 @@ app.put('/votes', function (req, res) {
   console.log('req.body in server put: ', req.body)
   items.updateVotes(req.body, function(err, data) {
     if(err) {
-      console.log('error: ', error)
+      console.log('error: ', err)
       res.sendStatus(500);
     } else {
       console.log('data in server put votes: ', data)

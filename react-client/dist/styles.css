@@ -58,6 +58,22 @@ body {
   vertical-align: top;
 }
 
+.editor {
+  width: 100%;
+}
+
+.quill {
+  width: 100%;
+}
+
+.ql-container {
+  width: 100%;
+}
+
+.ql-editor {
+  width: 100%;
+}
+
 /*.chapter {
   display: block;
 }
