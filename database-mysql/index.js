@@ -110,7 +110,7 @@ var updateVotes = function(body, callback) {
     })
   } else {
     console.log("Database updateVotes - There are between neg five votes and ten votes: ", body.votes)
-    connection.query(`UPDATE chapters SET votes = ${body.votes} WHERE id IN (SELECT id FROM (SELECT id FROM chapters WHERE title = '${body.title}' ORDER BY updated LIMIT 1) AS temp)`, function(err, results, fields) {
+    connection.query(`UPDATE chapters SET votes = ${body.votes} WHERE id IN (SELECT id FROM (SELECT id FROM chapters WHERE title = '${body.title}' ORDER BY updated DESC LIMIT 1) AS temp)`, function(err, results, fields) {
     // connection.query(`SELECT id FROM chapters WHERE title = '${body.title}' ORDER BY updated LIMIT 1`, function(err, results, fields) {
       if(err) {
         callback(err, null);

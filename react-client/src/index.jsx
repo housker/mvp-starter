@@ -251,10 +251,10 @@ hide() {
 }
 
 upVote() {
-  this.setState({votes: ++this.state.votes},() => {
-    console.log('this.state right before update: ', this.state);
-    this.updateVotes();
-  });
+  // this.setState({votes: ++this.state.votes},() => {
+  //   console.log('this.state right before update: ', this.state);
+  //   this.updateVotes();
+  // });
   if(this.state.votes > 10) {
 
   let xmlString = this.state.content.__html;
@@ -263,11 +263,22 @@ upVote() {
   var childContent = doc.childNodes[0].textContent;
   // var child2 = child1.textContent;
   // console.log('child2: ', child2);
-  this.setState({content: { __html: `<p>${childContent}</p>`}}, () => {
+  this.setState({votes: ++this.state.votes},() => {
+    this.setState({content: { __html: `<p>${childContent}</p>`}}, () => {
     console.log('this.state right before updating votes on a 10+: ', this.state)
-    this.updateVotes();
-  })
+      this.updateVotes();
+    })
+  });
+  // this.setState({content: { __html: `<p>${childContent}</p>`}}, () => {
+  //   console.log('this.state right before updating votes on a 10+: ', this.state)
+  //   this.updateVotes();
+  // })
 
+  } else {
+    this.setState({votes: ++this.state.votes},() => {
+      console.log('this.state right before update: ', this.state);
+      this.updateVotes();
+    });
   }
   // this.updateVotes();
   //if votes is ten, get rid of formatting, make permanent
