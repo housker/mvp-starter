@@ -111,7 +111,9 @@ class App extends React.Component {
         })
         this.setState({coordinates: coordinates}, () => {
           this.state.coordinates.forEach(coordinate => {
-            this.setPing(coordinate[1], coordinate[0]);
+            if(coordinate) {
+              this.setPing(coordinate[1], coordinate[0]);
+            }
           });
         });
         this.planet.draw(this.canvas);
@@ -143,10 +145,10 @@ class App extends React.Component {
     $.ajax({
       url: `/items/${this.state.title}`,
       success: (data) => {
-        // console.log('data in loadChapter: ', data)
+        console.log('data[0].votes in loadChapter: ', data[0].votes);
         this.setState({
           // items: data[0],
-          geolocation: data[0].geolocation,
+          geolocation: JSON.parse(data[0].geolocation),
           content: {__html: data[0].content},
           votes: data[0].votes
         })
@@ -204,7 +206,7 @@ class App extends React.Component {
       .then(res => res.json())
       .then(jsonRes => console.log('jsonRes: ', jsonRes))
       .then(jsonRes => this.setState({mode: 'globe'}))
-      .then(jsonRes => this.drawGlobe())
+      // .then(jsonRes => this.drawGlobe())
       // .then(this.loadCities())
       // .then(() => console.log("Loaded Cities!"))
       // .then(this.loadPlugin())
@@ -249,7 +251,10 @@ hide() {
 }
 
 upVote() {
-  this.setState({votes: ++this.state.votes});
+  this.setState({votes: ++this.state.votes},() => {
+    console.log('this.state.votes right before update: ', this.state.votes);
+    this.updateVotes();
+  });
   if(this.state.votes > 10) {
 
   let xmlString = this.state.content.__html;
@@ -259,7 +264,7 @@ upVote() {
   // var child2 = child1.textContent;
   // console.log('child2: ', child2);
   this.setState({content: { __html: `<p>${childContent}</p>`}}, () => {
-    console.log('this.state.content: ', this.state.content)
+    // console.log('this.state.content: ', this.state.content)
     this.updateVotes();
   })
 
@@ -283,6 +288,7 @@ downVote() {
 }
 
 updateVotes() {
+  console.log("Updated votes on upVote with: ", this.state.votes)
   // console.log('updateVotes is being called!')
   // var xmlString = this.state.content.__html;
   // var parser = new DOMParser();
@@ -353,7 +359,7 @@ updateVotes() {
       case 'editor':
         this.save();
         // this.setState({mode: 'chapter'});
-                 console.log('this.state.mode: ', this.state.mode)
+                 // console.log('this.state.mode: ', this.state.mode)
         break;
       case 'newEditor':
         this.save();

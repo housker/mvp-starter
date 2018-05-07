@@ -9,12 +9,12 @@ var connection = mysql.createConnection({
 
 var selectChapter = function(title, callback) {
   // console.log('title in databse selectChapter: ', title)
-  connection.query(`SELECT * FROM chapters WHERE title = '${title}' ORDER BY updated LIMIT 1`, function(err, results, fields) {
+  connection.query(`SELECT * FROM chapters WHERE title = '${title}' ORDER BY updated DESC LIMIT 1`, function(err, results, fields) {
     if(err) {
       console.log('Error in database trying to find select')
       callback(err, null);
     } else {
-      // console.log('results in database selectChapter: ', results)
+      console.log('results in database selectChapter: ', results)
       callback(null, results);
     }
   });
