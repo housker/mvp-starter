@@ -145,7 +145,7 @@ class App extends React.Component {
     $.ajax({
       url: `/items/${this.state.title}`,
       success: (data) => {
-        console.log('data[0].votes in loadChapter: ', data[0].votes);
+        console.log('data in loadChapter: ', data);
         this.setState({
           // items: data[0],
           geolocation: JSON.parse(data[0].geolocation),
@@ -206,7 +206,7 @@ class App extends React.Component {
       .then(res => res.json())
       .then(jsonRes => console.log('jsonRes: ', jsonRes))
       .then(jsonRes => this.setState({mode: 'globe'}))
-      // .then(jsonRes => this.drawGlobe())
+      .then(jsonRes => this.drawGlobe())
       // .then(this.loadCities())
       // .then(() => console.log("Loaded Cities!"))
       // .then(this.loadPlugin())
@@ -252,7 +252,7 @@ hide() {
 
 upVote() {
   this.setState({votes: ++this.state.votes},() => {
-    console.log('this.state.votes right before update: ', this.state.votes);
+    console.log('this.state right before update: ', this.state);
     this.updateVotes();
   });
   if(this.state.votes > 10) {
@@ -264,7 +264,7 @@ upVote() {
   // var child2 = child1.textContent;
   // console.log('child2: ', child2);
   this.setState({content: { __html: `<p>${childContent}</p>`}}, () => {
-    // console.log('this.state.content: ', this.state.content)
+    console.log('this.state right before updating votes on a 10+: ', this.state)
     this.updateVotes();
   })
 
@@ -279,7 +279,7 @@ downVote() {
     this.updateVotes();
     // if(this.state.votes < 5) {
       console.log('this.state.votes inside downVote if-statement: ', this.state.votes)
-      this.setState({mode: 'globe'}, this.loadCities);
+      this.setState({mode: 'globe'}, this.drawGlobe);
     // }
   });
   // this.updateVotes();
@@ -304,9 +304,10 @@ updateVotes() {
   fetch('/votes', {
     method: 'PUT',
     body: JSON.stringify({
-      votes: this.state.votes,
       title: this.state.title,
-      content: this.state.content.__html
+      content: this.state.content.__html,
+      votes: this.state.votes,
+      geolocation: JSON.stringify(this.state.geolocation)
     }),
     headers: {
       'content-type': 'application/json'

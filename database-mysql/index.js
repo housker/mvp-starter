@@ -79,9 +79,9 @@ var updateVotes = function(body, callback) {
         callback(err, null);
       } else {
         console.log('These are the results in updateVotes: ', results)
-        var values = [body.title, body.content, body.votes]
+        var values = [body.title, body.content, body.votes, body.geolocation]
         console.log('values in updateVotes: ', values)
-        connection.query('INSERT INTO chapters (title, content, votes) VALUES(?, ?, ?)', values, function(err, results, fields) {
+        connection.query('INSERT INTO chapters (title, content, votes, geolocation) VALUES(?, ?, ?, ?)', values, function(err, results, fields) {
           if(err) {
             callback(err, null);
           } else {
