@@ -56,6 +56,7 @@ class App extends React.Component {
     this.oldContent = {};
     this.planet = undefined;
     this.geocoder = undefined;
+    this.canvas = undefined;
     this.loadPlugin = this.loadPlugin.bind(this);
     this.loadCities = this.loadCities.bind(this);
     this.setPing = this.setPing.bind(this);
@@ -67,25 +68,32 @@ class App extends React.Component {
     this.reveal = this.reveal.bind(this);
     this.hide = this.hide.bind(this);
     this.updateVotes = this.updateVotes.bind(this);
+    this.drawGlobe = this.drawGlobe.bind(this);
     // this.selectChapter = this.selectChapter.bind(this);
   }
 
   componentDidMount() {
-    let planet = planetaryjs.planet();
-    this.planet = planet;
-    let geocoder =  new google.maps.Geocoder();
-    this.geocoder = geocoder;
-    this.loadPlugin();
-    this.loadCities();
-    var canvas = document.getElementById('globe');
-    planet.draw(canvas);
+    this.drawGlobe();
   }
 
-  // componentDidUpdate() {
-  // }
+  componentDidUpdate() {
+    // this.canvas = document.getElementById('globe');
+    // this.planet.draw(this.canvas);
+  }
+
+  drawGlobe() {
+    this.planet = planetaryjs.planet();
+    // this.planet = planet;
+    this.geocoder =  new google.maps.Geocoder();
+    // this.geocoder = geocoder;
+    this.loadPlugin();
+    this.loadCities();
+    this.canvas = document.getElementById('globe');
+    // this.canvas = canvas;
+    // this.planet.draw(this.canvas);
+  }
 
   loadCities() {
-    console.log('loadCities is being called')
     $.ajax({
       url: '/cities',
       success: (data) => {
@@ -102,8 +110,11 @@ class App extends React.Component {
         //   votes: data[0].votes
         })
         this.setState({coordinates: coordinates}, () => {
-          this.state.coordinates.forEach(coordinate => this.setPing(coordinate[0], coordinate[1]));
+          this.state.coordinates.forEach(coordinate => {
+            this.setPing(coordinate[1], coordinate[0]);
+          });
         });
+        this.planet.draw(this.canvas);
         // console.log("this.state.items: ", this.state.items)
       },
       error: (err) => {
@@ -193,9 +204,24 @@ class App extends React.Component {
       .then(res => res.json())
       .then(jsonRes => console.log('jsonRes: ', jsonRes))
       .then(jsonRes => this.setState({mode: 'globe'}))
+      .then(jsonRes => this.drawGlobe())
+      // .then(this.loadCities())
+      // .then(() => console.log("Loaded Cities!"))
+      // .then(this.loadPlugin())
+      // .then(() => console.log("LoadedPlugin!"))
+      // .then(this.planet.draw(this.canvas))
+      // .then(() => console.log("Drew Planet!"))
       .catch(err => console.log(err));
     })
     this.setState({content: {__html: html}})
+
+
+   // this.loadCities()
+   //            console.log('At end of newEditor this.state.mode: ', this.state.mode)
+   //            this.loadPlugin();
+   //      this.planet.draw(this.canvas);
+
+
     // $.ajax({
     //   url: '/items',
     //   type: 'POST',
@@ -295,7 +321,7 @@ updateVotes() {
     console.log('this.state.mode: ', this.state.mode)
     switch (this.state.mode) {
       case 'globe':
-        let city = this.globe.cityInput.value;
+        let city = this.cityInput.value;
         this.setState({title: city});
         // if(this.state.cities.includes(city)) {
         //   console.log("Match to cities")
@@ -331,9 +357,11 @@ updateVotes() {
         break;
       case 'newEditor':
         this.save();
-        this.setState({mode: 'globe'});
-        this.loadCities()
-              console.log('At end of newEditor this.state.mode: ', this.state.mode)
+        // this.setState({mode: 'globe'});
+        // this.loadCities()
+        //       console.log('At end of newEditor this.state.mode: ', this.state.mode)
+        //       this.loadPlugin();
+        // this.planet.draw(this.canvas);
         break;
       default:
       console.log('mode not recognized')
@@ -361,7 +389,15 @@ updateVotes() {
     let mode;
     switch (this.state.mode) {
       case 'globe':
-        mode = <Globe ref={(el) => this.globe = el} mode={this.state.mode} title={this.state.title} content={this.state.content} geolocation={this.state.geolocation}  cities={this.state.cities} button={button}/>;
+        // mode = <Globe ref={(el) => this.globe = el} mode={this.state.mode} title={this.state.title} content={this.state.content} geolocation={this.state.geolocation}  cities={this.state.cities} button={button}/>;
+        mode =       <div>
+        <h2 className="title">Git Saga</h2>
+        <input ref={el => this.cityInput = el} className="cityInput" name="data" type="radio" list="data" type="text" placeholder="city, country" />
+        <datalist className="dropdown" ref="dList" id="data" >
+        {this.state.cities.map((city, i) => <option className="dropdown" key={i} value={city} />)}
+        </datalist>
+        <canvas onClick={this.takeLocation} id='globe' width='750' height='750'></canvas>
+      </div>;
         break;
       case 'chapter':
         mode = <Chapter mode={this.state.mode} title={this.state.title} upVote={this.upVote} downVote={this.downVote} votes={this.state.votes} reveal={this.reveal} hide={this.hide} isHovering={this.state.isHovering} content={this.state.content} edit={this.edit} loadQR={this.loadQR} loadChapter={this.loadChapter} button={button}/>;

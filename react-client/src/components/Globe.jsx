@@ -42,8 +42,8 @@ class Globe extends React.Component {
     // this.loadPlugin();
     // this.props.cities.forEach(city => this.getCoordinates(city));
     // this.props.coordinates.forEach(coordinate => this.setPing(coordinate[0], coordinate[1]));
-    // var canvas = document.getElementById('globe');
-    // planet.draw(canvas);
+    var canvas = document.getElementById('globe');
+    this.props.planet.draw(canvas);
   }
 
   componentDidUpdate() {
