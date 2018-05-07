@@ -42,12 +42,13 @@ var selectChapter = function(title, callback) {
 
 };
 
-var selectTitles = function(callback) {
-  connection.query('SELECT title FROM chapters GROUP by title', function(err, results, fields) {
+var selectCities = function(callback) {
+  console.log('selectCities is being called in database')
+  connection.query('SELECT title, geolocation FROM chapters GROUP BY title', function(err, results, fields) {
     if(err) {
       callback(err, null);
     } else {
-      // console.log('results in database: ', results)
+      console.log('results in database: ', results)
       callback(null, results);
     }
   });
@@ -98,8 +99,8 @@ var updateVotes = function(body, callback) {
     //   }
     // })
   } else if(body.votes < -5) {
-    console.log("Database updateVotes - There are less than neg five votes.")
-    connection.query(`DELETE from chapters WHERE title = ${body.title}`, function(err, results, fields) {
+    console.log("Database updateVotes - There are less than neg five votes: ", body.votes)
+    connection.query(`DELETE from chapters WHERE title = '${body.title}'`, function(err, results, fields) {
       if(err) {
         callback(err, null);
       } else {
@@ -108,7 +109,7 @@ var updateVotes = function(body, callback) {
       }
     })
   } else {
-    console.log("Database updateVotes - There are between neg five votes and ten votes.")
+    console.log("Database updateVotes - There are between neg five votes and ten votes: ", body.votes)
     connection.query(`UPDATE chapters SET votes = ${body.votes} WHERE id IN (SELECT id FROM (SELECT id FROM chapters WHERE title = '${body.title}' ORDER BY updated LIMIT 1) AS temp)`, function(err, results, fields) {
     // connection.query(`SELECT id FROM chapters WHERE title = '${body.title}' ORDER BY updated LIMIT 1`, function(err, results, fields) {
       if(err) {
@@ -126,9 +127,9 @@ var updateVotes = function(body, callback) {
 // title = ${body.title}` AND updated = (SELECT MAX(updated) FROM chapters)
 
 var insert = function(body, callback) {
-  console.log('this is body.content in database insert: ', body.content)
-  var values = [body.title, body.content, body.votes]
-  connection.query('INSERT INTO chapters (title, content, votes) VALUES(?, ?, ?)', values, function(err, results, fields) {
+  console.log('this is body in database insert: ', body)
+  var values = [body.title, body.content, body.geolocation, body.votes]
+  connection.query('INSERT INTO chapters (title, content, geolocation, votes) VALUES(?, ?, ?, ?)', values, function(err, results, fields) {
     if(err) {
       callback(err, null);
     } else {
@@ -138,6 +139,6 @@ var insert = function(body, callback) {
 }
 
 module.exports.selectChapter = selectChapter;
-module.exports.selectTitles = selectTitles;
+module.exports.selectCities = selectCities;
 module.exports.updateVotes = updateVotes;
 module.exports.insert = insert;

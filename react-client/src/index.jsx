@@ -39,19 +39,26 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      cities: ['Minneapolis, US', 'Boulder, US', 'Cambridge, UK', 'Boston, US', 'Asunicion, Paraguay'],
-      items: [],
-      quillRef: {},
+      cities: [],
+      //'Minneapolis, US', 'Boulder, US', 'Cambridge, UK', 'Boston, US', 'Asunicion, Paraguay'
+      coordinates: [],
+      // items: [],
+      // quillRef: {},
       mode: 'globe',
       title: '',
       isHovering: false,
       votes: 0,
+      geolocation: [],
       content: { __html: '<p>There was a story.<span style="color:#003700;background-color:#cce8cc"> And this is the next part.</span></p>'}
     }
     this.quillRef = null;
     this.geocoder = undefined;
     this.oldContent = {};
+    this.planet = undefined;
+    this.geocoder = undefined;
+    this.loadPlugin = this.loadPlugin.bind(this);
     this.loadCities = this.loadCities.bind(this);
+    this.setPing = this.setPing.bind(this);
     this.loadChapter = this.loadChapter.bind(this);
     this.loadQR = this.loadQR.bind(this)
     this.click = this.click.bind(this);
@@ -64,20 +71,28 @@ class App extends React.Component {
   }
 
   componentDidMount() {
+    let planet = planetaryjs.planet();
+    this.planet = planet;
     let geocoder =  new google.maps.Geocoder();
     this.geocoder = geocoder;
+    this.loadPlugin();
     this.loadCities();
+    var canvas = document.getElementById('globe');
+    planet.draw(canvas);
   }
 
-  componentDidUpdate() {
-  }
+  // componentDidUpdate() {
+  // }
 
   loadCities() {
+    console.log('loadCities is being called')
     $.ajax({
       url: '/cities',
       success: (data) => {
         console.log('data from cities request: ', data)
         var cities = data.map(obj => obj.title);
+        var coordinates = data.map(obj => JSON.parse(obj.geolocation))
+        console.log("these are coordinate on load: ", coordinates)
         console.log('titles: ', cities)
         this.setState({
           cities: cities
@@ -86,12 +101,30 @@ class App extends React.Component {
         //   content: {__html: data[0].content},
         //   votes: data[0].votes
         })
+        this.setState({coordinates: coordinates}, () => {
+          this.state.coordinates.forEach(coordinate => this.setPing(coordinate[0], coordinate[1]));
+        });
         // console.log("this.state.items: ", this.state.items)
       },
       error: (err) => {
         console.log('err', err);
       }
     });
+  }
+
+  loadPlugin() {
+    this.planet.loadPlugin(planetaryjs.plugins.earth({
+      topojson: { file: './world-110m.json' },
+      oceans:   { fill:  '#497287'},
+      land:     { fill: '#000000'},
+      borders:  { stroke: '#de8048'}
+    }));
+    this.planet.loadPlugin(planetaryjs.plugins.pings({color: 'yellow', ttl: 5000, angle: 10}));
+    this.planet.loadPlugin(planetaryjs.plugins.drag());
+  }
+
+  setPing(lng, lat) {
+    setInterval(() => {this.planet.plugins.pings.add(lng, lat, {color: 'white', ttl: 2000, angle: Math.random() * 8}, 250)}, (Math.random() * 2000) + 1000)
   }
 
   loadChapter() {
@@ -101,8 +134,8 @@ class App extends React.Component {
       success: (data) => {
         // console.log('data in loadChapter: ', data)
         this.setState({
-          items: data[0],
-          // title: data[0].title,
+          // items: data[0],
+          geolocation: data[0].geolocation,
           content: {__html: data[0].content},
           votes: data[0].votes
         })
@@ -142,23 +175,27 @@ class App extends React.Component {
     var converter = new DeltaConverter(adjusted.ops, {});
     var html = converter.convert();
 
-    this.setState({votes: 0})
+    this.setState({votes: 0}, () =>{
+      console.log('this.state.geolocation: ', this.state.geolocation)
 
-
-    fetch('/items', {
-      method: 'POST',
-      body: JSON.stringify({
-        title: this.state.title,
-        content: html,
-        votes: this.state.votes,
-      }),
-      headers: {
-        'content-type': 'application/json'
-      }
+      fetch('/items', {
+        method: 'POST',
+        body: JSON.stringify({
+          title: this.state.title,
+          geolocation: JSON.stringify(this.state.geolocation),
+          content: html,
+          votes: this.state.votes,
+        }),
+        headers: {
+          'content-type': 'application/json'
+        }
+      })
+      .then(res => res.json())
+      .then(jsonRes => console.log('jsonRes: ', jsonRes))
+      .then(jsonRes => this.setState({mode: 'globe'}))
+      .catch(err => console.log(err));
     })
-    .then(res => res.json())
-    .then(jsonRes => console.log('jsonRes: ', jsonRes))
-    .catch(err => console.log(err));
+    this.setState({content: {__html: html}})
     // $.ajax({
     //   url: '/items',
     //   type: 'POST',
@@ -174,8 +211,6 @@ class App extends React.Component {
     //     console.log('err', err);
     //   }
     // });
-
-    this.setState({content: {__html: html}})
   }
 
 
@@ -209,10 +244,12 @@ upVote() {
 
 downVote() {
   this.setState({votes: --this.state.votes}, () => {
+    console.log('this.state.votes in downVote: ', this.state.votes)
     this.updateVotes();
-    if(this.state.votes < 5) {
-      this.setState({mode: 'globe'});
-    }
+    // if(this.state.votes < 5) {
+      console.log('this.state.votes inside downVote if-statement: ', this.state.votes)
+      this.setState({mode: 'globe'}, this.loadCities);
+    // }
   });
   // this.updateVotes();
   //if votes is negative five, revert to earlier
@@ -272,6 +309,9 @@ updateVotes() {
           this.geocoder.geocode({'address': city}, (results, status) => {
             if (status == google.maps.GeocoderStatus.OK) {
               console.log('OK!');
+              let geolocation = [results[0].geometry.location.lat(), results[0].geometry.location.lng()];
+              console.log('geolocation before being set to state: ', geolocation)
+              this.setState({geolocation: geolocation});
               this.setState({mode: 'newEditor'});
               // this.setPing(results[0].geometry.location.lng(), results[0].geometry.location.lat())
             // } else {
@@ -286,7 +326,7 @@ updateVotes() {
         break;
       case 'editor':
         this.save();
-        this.setState({mode: 'chapter'});
+        // this.setState({mode: 'chapter'});
                  console.log('this.state.mode: ', this.state.mode)
         break;
       case 'newEditor':
@@ -321,7 +361,7 @@ updateVotes() {
     let mode;
     switch (this.state.mode) {
       case 'globe':
-        mode = <Globe ref={(el) => this.globe = el} mode={this.state.mode} title={this.state.title} content={this.state.content}  cities={this.state.cities} button={button}/>;
+        mode = <Globe ref={(el) => this.globe = el} mode={this.state.mode} title={this.state.title} content={this.state.content} geolocation={this.state.geolocation}  cities={this.state.cities} button={button}/>;
         break;
       case 'chapter':
         mode = <Chapter mode={this.state.mode} title={this.state.title} upVote={this.upVote} downVote={this.downVote} votes={this.state.votes} reveal={this.reveal} hide={this.hide} isHovering={this.state.isHovering} content={this.state.content} edit={this.edit} loadQR={this.loadQR} loadChapter={this.loadChapter} button={button}/>;

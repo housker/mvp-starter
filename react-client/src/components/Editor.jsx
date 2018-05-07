@@ -19,6 +19,7 @@ class Editor extends React.Component {
   }
 
   componentDidMount() {
+    console.log('this.state inside newEditor: ', this.state)
     if(this.quillRef === null && typeof this.reactQuillRef.getEditor === 'function') {
       this.quillRef = this.reactQuillRef.getEditor();
       this.props.loadQR(this.quillRef)

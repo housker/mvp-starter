@@ -16,12 +16,12 @@ class Globe extends React.Component {
     this.state = {
       // cities: ['Minneapolis, US', 'Boulder, US', 'Cambridge, UK', 'Boston, US', 'Asunicion, Paraguay']
     }
-    this.planet = undefined;
-    this.geocoder = undefined;
+    // this.planet = undefined; //now in parent too, consider sending down as props
+    this.geocoder = undefined;  //now in parent too, consider sending down as props
     this.cityInput = null;
-    this.loadPlugin = this.loadPlugin.bind(this);
-    this.getCoordinates = this.getCoordinates.bind(this);
-    this.setPing = this.setPing.bind(this);
+    // this.loadPlugin = this.loadPlugin.bind(this);
+    // this.getCoordinates = this.getCoordinates.bind(this);
+    // this.setPing = this.setPing.bind(this);
     this.takeLocation = this.takeLocation.bind(this);
 
 
@@ -35,44 +35,46 @@ class Globe extends React.Component {
   componentDidMount() {
     // console.log('this.refs.cityInput: ', this.refs.cityInput)
     // console.log('this.refs.dList.childNodes: ', this.refs.dList.childNodes)
-    let planet = planetaryjs.planet();
-    this.planet = planet;
-    let geocoder =  new google.maps.Geocoder();
-    this.geocoder = geocoder;
-    this.loadPlugin();
+    // let planet = planetaryjs.planet();
+    // this.planet = planet;
+    // let geocoder =  new google.maps.Geocoder();
+    // this.geocoder = geocoder;
+    // this.loadPlugin();
     // this.props.cities.forEach(city => this.getCoordinates(city));
-    var canvas = document.getElementById('globe');
-    planet.draw(canvas);
+    // this.props.coordinates.forEach(coordinate => this.setPing(coordinate[0], coordinate[1]));
+    // var canvas = document.getElementById('globe');
+    // planet.draw(canvas);
   }
 
   componentDidUpdate() {
-    this.props.cities.forEach(city => this.getCoordinates(city));
+    // this.props.cities.forEach(city => this.getCoordinates(city));
   }
 
-  loadPlugin() {
-    this.planet.loadPlugin(planetaryjs.plugins.earth({
-      topojson: { file: './world-110m.json' },
-      oceans:   { fill:  '#497287'},
-      land:     { fill: '#000000'},
-      borders:  { stroke: '#de8048'}
-    }));
-    this.planet.loadPlugin(planetaryjs.plugins.pings({color: 'yellow', ttl: 5000, angle: 10}));
-    this.planet.loadPlugin(planetaryjs.plugins.drag());
-  }
+  // loadPlugin() {
+  //   this.planet.loadPlugin(planetaryjs.plugins.earth({
+  //     topojson: { file: './world-110m.json' },
+  //     oceans:   { fill:  '#497287'},
+  //     land:     { fill: '#000000'},
+  //     borders:  { stroke: '#de8048'}
+  //   }));
+  //   this.planet.loadPlugin(planetaryjs.plugins.pings({color: 'yellow', ttl: 5000, angle: 10}));
+  //   this.planet.loadPlugin(planetaryjs.plugins.drag());
+  // }
 
-  getCoordinates(city) {
-    this.geocoder.geocode({'address': city}, (results, status) => {
-      if (status == google.maps.GeocoderStatus.OK) {
-        this.setPing(results[0].geometry.location.lng(), results[0].geometry.location.lat())
-      } else {
-        console.log(status);
-      }
-    });
-  }
+  // getCoordinates(city) {
+  //   this.geocoder.geocode({'address': city}, (results, status) => {
+  //     if (status == google.maps.GeocoderStatus.OK) {
+  //       // this.setPing(results[0].geometry.location.lng(), results[0].geometry.location.lat())
+  //       this.setPing(this.props.geolocation[0], this.props.geolocation[1]);
+  //     } else {
+  //       console.log(status);
+  //     }
+  //   });
+  // }
 
-  setPing(lng, lat) {
-    setInterval(() => {this.planet.plugins.pings.add(lng, lat, {color: 'white', ttl: 2000, angle: Math.random() * 8}, 250)}, (Math.random() * 2000) + 1000)
-  }
+  // setPing(lng, lat) {
+  //   setInterval(() => {this.planet.plugins.pings.add(lng, lat, {color: 'white', ttl: 2000, angle: Math.random() * 8}, 250)}, (Math.random() * 2000) + 1000)
+  // }
 
   takeLocation(e) {
 

@@ -45,7 +45,8 @@ app.get('/items*', function (req, res) {
 });
 
 app.get('/cities', function (req, res) {
-  items.selectTitles(function(err, data) {
+  console.log('Request to cites in server')
+  items.selectCities(function(err, data) {
     if(err) {
       res.sendStatus(500);
     } else {

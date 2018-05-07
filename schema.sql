@@ -19,6 +19,7 @@ CREATE TABLE `chapters` (
   `title` CHAR(50),
   `content` TEXT(500),
   `votes` INTEGER,
+  `geolocation` CHAR(50),
   `updated` TIMESTAMP,
   PRIMARY KEY (`id`)
 );
