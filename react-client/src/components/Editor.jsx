@@ -1,12 +1,9 @@
 import React from 'react';
-// import createRef from 'create-react-ref';
 import ReactQuill from 'react-quill';
 import $ from 'jquery';
-// import 'react-quill/dist/quill.snow.css';
 import ReactDOM from 'react-dom';
 import Quill from 'quill';
 import Delta from 'quill-delta';
-
 
 class Editor extends React.Component {
   constructor(props) {
@@ -19,19 +16,11 @@ class Editor extends React.Component {
   }
 
   componentDidMount() {
-    console.log('this.state inside newEditor: ', this.state)
     if(this.quillRef === null && typeof this.reactQuillRef.getEditor === 'function') {
       this.quillRef = this.reactQuillRef.getEditor();
       this.props.loadQR(this.quillRef)
     }
   }
-
-  componentDidUpdate() {
-
-  }
-
-
-
 
   render() {
     return (

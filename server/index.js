@@ -33,19 +33,16 @@ app.get('/items*', function (req, res) {
 
 
   var title = decodeURI(req.url.slice(7));
-  console.log('title: ', title)
   items.selectChapter(title, function(err, data) {
     if(err) {
       res.sendStatus(500);
     } else {
-      // console.log('data in server gotten from selectChapter: ', data)
       res.json(data);
     }
   });
 });
 
 app.get('/cities', function (req, res) {
-  console.log('Request to cites in server')
   items.selectCities(function(err, data) {
     if(err) {
       res.sendStatus(500);
@@ -56,7 +53,6 @@ app.get('/cities', function (req, res) {
 });
 
 app.post('/items', function (req, res) {
-  // console.log('req.body in server: ', req.body.title, req.body.content, req.body.votes)
   items.insert(req.body, function(err, data) {
     if(err) {
       res.sendStatus(500);
@@ -64,36 +60,18 @@ app.post('/items', function (req, res) {
       res.json(data);
     }
   });
-  // items.insert(req.body, function(err, data) {
-  //   if(err) {
-  //     res.sendStatus(500);
-  //   } else {
-  //     res.json(data);
-  //   }
-  // });
 });
 
 app.put('/votes', function (req, res) {
-  console.log('req.body in server put: ', req.body)
   items.updateVotes(req.body, function(err, data) {
     if(err) {
       console.log('error: ', err)
       res.sendStatus(500);
     } else {
-      console.log('data in server put votes: ', data)
       res.json(data);
     }
   });
-  // items.insert(req.body, function(err, data) {
-  //   if(err) {
-  //     res.sendStatus(500);
-  //   } else {
-  //     res.json(data);
-  //   }
-  // });
 });
-
-
 
 
 app.listen(3000, function() {

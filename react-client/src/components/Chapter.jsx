@@ -1,8 +1,6 @@
 import React from 'react';
-// import createRef from 'create-react-ref';
 import ReactQuill from 'react-quill';
 import $ from 'jquery';
-// import 'react-quill/dist/quill.snow.css';
 import ReactDOM from 'react-dom';
 import Quill from 'quill';
 import Delta from 'quill-delta';
@@ -19,7 +17,6 @@ class Chapter extends React.Component {
   }
 
   componentDidMount() {
-        console.log('this.props.mode: ', this.props.mode)
     this.props.loadChapter();
   }
 
@@ -29,9 +26,6 @@ class Chapter extends React.Component {
       this.props.loadQR(this.quillRef)
     }
   }
-
-
-
 
   render() {
     var provisional = this.props.content.__html.includes("span")
