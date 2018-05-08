@@ -100,7 +100,7 @@ var updateVotes = function(body, callback) {
     // })
   } else if(body.votes < -5) {
     console.log("Database updateVotes - There are less than neg five votes: ", body.votes)
-    connection.query(`DELETE from chapters WHERE title = '${body.title}'`, function(err, results, fields) {
+    connection.query(`DELETE from chapters WHERE title = '${body.title}' and id IN (SELECT id FROM (SELECT id FROM chapters WHERE title = '${body.title}' ORDER BY updated DESC LIMIT 1) AS temp)`, function(err, results, fields) {
       if(err) {
         callback(err, null);
       } else {
