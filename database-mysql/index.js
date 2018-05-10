@@ -1,11 +1,26 @@
 var mysql = require('mysql');
 
 var connection = mysql.createConnection({
-  host     : 'localhost',
-  user     : 'root',
-  password : '',
-  database : 'test'
+  host     : process.env.RDS_HOSTNAME,
+  user     : process.env.RDS_USERNAME,
+  password : process.env.RDS_PASSWORD,
+  port     : process.env.RDS_PORT,
+  database : process.env.RDS_DB_NAME
 });
+
+// var connection = mysql.createConnection({
+//   host     : 'localhost',
+//   user     : 'root',
+//   password : '',
+//   database : 'gitsaga'
+// });
+
+var check = function() {
+  connection.connect(function(err) {
+    if (err) throw err;
+    console.log("connected to database");
+  });
+};
 
 var selectChapter = function(title, callback) {
   connection.query(`SELECT * FROM chapters WHERE title = '${title}' ORDER BY updated DESC LIMIT 1`, function(err, results, fields) {
@@ -20,8 +35,10 @@ var selectChapter = function(title, callback) {
 var selectCities = function(callback) {
   connection.query('SELECT title, geolocation FROM chapters GROUP BY title', function(err, results, fields) {
     if(err) {
+      console.log('error: ', err)
       callback(err, null);
     } else {
+      console.log('results in db: ', results)
       callback(null, results);
     }
   });
@@ -77,3 +94,4 @@ module.exports.selectChapter = selectChapter;
 module.exports.selectCities = selectCities;
 module.exports.updateVotes = updateVotes;
 module.exports.insert = insert;
+module.exports.check = check;

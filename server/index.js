@@ -18,20 +18,6 @@ app.use(express.static(__dirname + '/../react-client/dist'));
 // app.use(express.static(__dirname + '/../node_modules'));
 
 app.get('/items*', function (req, res) {
-
-// const myURL = url.parse(req.url);
-// console.log('myUrl: ', myURL)
-
-// const myURL = new URL('https://example.org/abc/xyz?123');
-// console.log(myURL.pathname);
-// // Prints /abc/xyz
-
-// myURL.pathname = '/abcdef';
-// console.log(myURL.href);
-// // Prints https://example.org/abcdef?123
-
-
-
   var title = decodeURI(req.url.slice(7));
   items.selectChapter(title, function(err, data) {
     if(err) {
@@ -73,8 +59,10 @@ app.put('/votes', function (req, res) {
   });
 });
 
+let port = process.env.PORT || 3000
 
-app.listen(3000, function() {
-  console.log('listening on port 3000!');
+app.listen(port, function() {
+  console.log(`listening on port ${port}!`);
+  items.check();
 });
 

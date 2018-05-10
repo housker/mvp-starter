@@ -1,8 +1,8 @@
-DROP DATABASE IF EXISTS test;
+-- DROP DATABASE IF EXISTS test;
 
-CREATE DATABASE test;
+-- CREATE DATABASE test;
 
-USE test;
+USE ebdb;
 
 DROP TABLE IF EXISTS `chapters`;
 
